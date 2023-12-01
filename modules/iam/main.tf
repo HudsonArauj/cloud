@@ -23,30 +23,36 @@ resource "aws_iam_instance_profile" "this" {
 
 resource "aws_iam_policy" "this" {
   name = "${var.application_name}_policy"
-  policy = jsonencode(
-    {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Action = [
-            "rds:*",
-            "ec2:*"
-          ],
-          Effect = "Allow",
-          Resource = "*"
-        },
-        { Action = [
-          "cloudwatch:PutMetricData",
-          "cloudwatch:GetMetricStatistics",
-          "cloudwatch:ListMetrics",
-          "cloudwatch:Describe*",
-          "ec2:Describe*",
-          ],
-          Effect = "Allow",
-        Resource = "*" }
-      ]
-    }
-  )
+   policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      },
+      {
+        Action = [
+          "rds:Describe*",
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      },
+      {
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
