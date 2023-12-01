@@ -38,6 +38,6 @@ terraform-project/.aws/credentials
 **project-key-pair
 **project-key-pair.pub
 ```
-**ec2/
+**modules/ec2/
 ```
-**alb/
+**modules/alb/
