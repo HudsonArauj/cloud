@@ -1,7 +1,3 @@
-resource "aws_key_pair" "project_key_pair" {
-  key_name   = "project-key-pair"
-  public_key = file("project-key-pair.pub")
-}
 
 resource "aws_lb" "this" {
   name                       = "${var.application_name}-lb"
@@ -56,7 +52,6 @@ resource "aws_launch_template" "project_launch_template" {
   name_prefix   = "${var.application_name}_launch_template"
   image_id      = var.ami_id
   instance_type = "t2.micro"
-  key_name      = aws_key_pair.project_key_pair.key_name
   network_interfaces {
     security_groups             = [aws_security_group.project_sg_instance.id]
     associate_public_ip_address = true
@@ -134,12 +129,12 @@ resource "aws_autoscaling_group" "project_asg" {
     version = "$Latest"
   }
   target_group_arns         = [aws_lb_target_group.lb_target_group.arn] //preciso informar o target group
-  min_size                  = 1
-  max_size                  = 5
-  desired_capacity          = 1
+  desired_capacity     = 2
+  max_size             = 6
+  min_size             = 2
   vpc_zone_identifier       = var.public_subnets
   health_check_type         = "EC2"
-  health_check_grace_period = 300
+  health_check_grace_period = 120
   force_delete              = true
   tag {
     key                 = "Name"
@@ -227,7 +222,7 @@ resource "aws_sns_topic_subscription" "sns_topic_subscription" {
 # // cloudwatch alarm para baixa utilização da CPU
 
 resource "aws_autoscaling_policy" "asg_policy_up" {
-  name                   = "my-asg-policy"
+  name                   = "my-asg-policy1"
   policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.project_asg.name
 
@@ -241,7 +236,7 @@ resource "aws_autoscaling_policy" "asg_policy_up" {
   
 }
 resource "aws_autoscaling_policy" "asg_policy_down" {
-  name                   = "my-asg-policy"
+  name                   = "my-asg-policy2"
   policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.project_asg.name
 
