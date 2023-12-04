@@ -59,9 +59,9 @@ resource "aws_launch_template" "project_launch_template" {
 
   }
 
-  iam_instance_profile {
-    name = var.profile_name
-  }
+  # iam_instance_profile {
+  #   name = var.profile_name
+  # }
   user_data = base64encode(<<-EOF
     #!/bin/bash
     sudo touch app.log 
@@ -231,7 +231,7 @@ resource "aws_autoscaling_policy" "asg_policy_up" {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
 
-    target_value = 10.0
+    target_value = 15.0
   }
   
 }
